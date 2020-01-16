@@ -1,5 +1,4 @@
 package com.example;
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
