@@ -1,9 +1,12 @@
 package com.example;
 
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +24,10 @@ public class KaiinController {
 		return "Hello World";
 	}
 	
-	// register API
+	// login/logout API
+	// Security Configurationの設定で有効になるため実装は不要です。
+	
+	// register API〇
 	@RequestMapping(path = "/register", method = RequestMethod.POST)
 	public ResponseEntity<Kaiin> register(
 			@RequestParam("name") String name,
@@ -30,23 +36,39 @@ public class KaiinController {
 		kaiin.setName(name);
 		kaiinService.register(kaiin,password);
 		return ResponseEntity.ok(kaiin);
-		
 	}
 	
-	@RequestMapping(path = "/query", method = RequestMethod.GET)
-	public ResponseEntity<List<Kaiin>> query() {
+	
+	@RequestMapping(path = "/add", method = RequestMethod.POST)
+	public ResponseEntity<Todo> add(
+			@AuthenticationPrincipal(expression = "kaiin") Kaiin loginKaiin,
+			@RequestParam("date") String date,
+			@RequestParam("content") String content) {
+		Todo todo = new Todo();
+		todo.setDate(date);
+		todo.setContent(content);
+		todo.setUserId(loginKaiin.getUserId());
+		kaiinService.add(todo);
 		
-		return ResponseEntity.ok(kaiinService.query());
+		return ResponseEntity.ok(todo);
+	}
+	
+	@RequestMapping(path = "/query", method = RequestMethod.POST)
+	public ResponseEntity<List<Todo>> query(
+			@AuthenticationPrincipal SimpleLoginUser loginUser) {
+		Kaiin loginKaiin = loginUser.getKaiin();
+		System.out.println(loginKaiin.getUsername());
+		System.out.println(loginKaiin.getUserId());
+		return ResponseEntity.ok(kaiinService.query(loginKaiin));
 	}
 	
 	
 	@RequestMapping(path = "/delete", method = RequestMethod.POST)
-	public ResponseEntity<Kaiin> delete(@RequestParam int userid) {
-		Kaiin kaiin = new Kaiin();
-		kaiin.setUserId(userid);
-		
-		kaiinService.delete(kaiin);
-		return ResponseEntity.ok(kaiin);
+	public ResponseEntity<Todo> delete(@RequestParam int todoid) {
+		Todo todo = new Todo();
+		todo.setTodoId(todoid);
+				
+		return ResponseEntity.ok(kaiinService.delete(todo));
 		
 	}
 }
