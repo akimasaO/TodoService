@@ -13,7 +13,7 @@ import org.thymeleaf.util.StringUtils;
 import com.example.Kaiin;
 
 @Service
-public class KaiinService implements UserDetailsService{
+public class KaiinService /*implements UserDetailsService*/{
 	
 	@Autowired
 	KaiinRepository kaiinRepo;
@@ -24,19 +24,19 @@ public class KaiinService implements UserDetailsService{
 	@Autowired
     PasswordEncoder passwordEncoder;
 	
-	@Override
-	public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-		
-		if(StringUtils.isEmpty(name)) {
-			throw new UsernameNotFoundException("");
-		}
-		
-		Kaiin kaiin = kaiinRepo.findByName(name);
-		if(kaiin == null) {
-			throw new UsernameNotFoundException("");
-		}
-		return kaiin;
-	}
+//	@Override
+//	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//		
+//		if(StringUtils.isEmpty(username)) {
+//			throw new UsernameNotFoundException("");
+//		}
+//		
+//		Kaiin kaiin = kaiinRepo.findByName(username);
+//		if(kaiin == null) {
+//			throw new UsernameNotFoundException("");
+//		}
+//		return kaiin;
+//	}
 
 	// register API
 	public void register(Kaiin kaiin, String rawPassword) {
@@ -58,7 +58,6 @@ public class KaiinService implements UserDetailsService{
 
 	public Todo delete(Todo todo) {
 		todo = todoRepo.findByTodoid(todo.getTodoId());
-		todoRepo.delete(todo);
 		return todo;
 	}
 

@@ -18,9 +18,9 @@ public class SimpleLoginUser extends User {
 	}
 	
 	public SimpleLoginUser(Kaiin kaiin) {
-		super(kaiin.getUsername(), kaiin.getPassword(), null);
-		Kaiin loginkaiin = kaiinRepo.findByName(kaiin.getUsername());
-		kaiin.setUserId(loginkaiin.getUserId());
-		this.kaiin = kaiin;
+		super(kaiin.getName(), kaiin.getPassword(), null);
+		Kaiin loginkaiin = kaiinRepo.findByName(kaiin.getName());
+		//kaiin.setUserId(loginkaiin.getUserId());
+		this.kaiin = loginkaiin;
 	}
 }

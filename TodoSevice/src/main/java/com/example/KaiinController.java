@@ -41,9 +41,10 @@ public class KaiinController {
 	
 	@RequestMapping(path = "/add", method = RequestMethod.POST)
 	public ResponseEntity<Todo> add(
-			@AuthenticationPrincipal(expression = "kaiin") Kaiin loginKaiin,
+			@AuthenticationPrincipal SimpleLoginUser loginUser,
 			@RequestParam("date") String date,
 			@RequestParam("content") String content) {
+		Kaiin loginKaiin = loginUser.getKaiin();
 		Todo todo = new Todo();
 		todo.setDate(date);
 		todo.setContent(content);
@@ -57,18 +58,23 @@ public class KaiinController {
 	public ResponseEntity<List<Todo>> query(
 			@AuthenticationPrincipal SimpleLoginUser loginUser) {
 		Kaiin loginKaiin = loginUser.getKaiin();
-		System.out.println(loginKaiin.getUsername());
+		System.out.println(loginKaiin.getName());
 		System.out.println(loginKaiin.getUserId());
 		return ResponseEntity.ok(kaiinService.query(loginKaiin));
 	}
 	
 	
 	@RequestMapping(path = "/delete", method = RequestMethod.POST)
-	public ResponseEntity<Todo> delete(@RequestParam int todoid) {
+	public ResponseEntity<Todo> delete(
+			@RequestParam Integer todoid,
+			@AuthenticationPrincipal SimpleLoginUser loginUser) {
 		Todo todo = new Todo();
 		todo.setTodoId(todoid);
 				
 		return ResponseEntity.ok(kaiinService.delete(todo));
 		
 	}
+	
+	
+
 }
