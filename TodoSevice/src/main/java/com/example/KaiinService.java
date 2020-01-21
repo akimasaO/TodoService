@@ -13,7 +13,7 @@ import org.thymeleaf.util.StringUtils;
 import com.example.Kaiin;
 
 @Service
-public class KaiinService /*implements UserDetailsService*/{
+public class KaiinService implements UserDetailsService{
 	
 	@Autowired
 	KaiinRepository kaiinRepo;
@@ -24,19 +24,19 @@ public class KaiinService /*implements UserDetailsService*/{
 	@Autowired
     PasswordEncoder passwordEncoder;
 	
-//	@Override
-//	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//		
-//		if(StringUtils.isEmpty(username)) {
-//			throw new UsernameNotFoundException("");
-//		}
-//		
-//		Kaiin kaiin = kaiinRepo.findByName(username);
-//		if(kaiin == null) {
-//			throw new UsernameNotFoundException("");
-//		}
-//		return kaiin;
-//	}
+	@Override
+	public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+		
+		if(StringUtils.isEmpty(name)) {
+			throw new UsernameNotFoundException("");
+		}
+		
+		Kaiin kaiin = kaiinRepo.findByName(name);
+		if(kaiin == null) {
+			throw new UsernameNotFoundException("");
+		}
+		return kaiin;
+	}
 
 	// register API
 	public void register(Kaiin kaiin, String rawPassword) {
@@ -46,19 +46,28 @@ public class KaiinService /*implements UserDetailsService*/{
 	}	
 	
 	// add API
-	public void add(Todo todo) {
+	public void add(Todo todo, Kaiin loginkaiin) {
+		Kaiin kaiin = kaiinRepo.findByName(loginkaiin.getUsername());
+		todo.setUserId(kaiin.getUserId());
 		todoRepo.save(todo);
 	}
 
 	// query API
-	public List<Todo> query(Kaiin kaiin) {
+	public List<Todo> query(Kaiin loginkaiin) {
+		Kaiin kaiin = kaiinRepo.findByName(loginkaiin.getUsername());
 		return todoRepo.findByUserid(kaiin.getUserId());
 		
 	}
 
-	public Todo delete(Todo todo) {
+	public Todo delete(Todo todo, Kaiin loginkaiin) {
 		todo = todoRepo.findByTodoid(todo.getTodoId());
-		return todo;
+		Kaiin kaiin = kaiinRepo.findByName(loginkaiin.getUsername());
+		if(todo.getUserId() == kaiin.getUserId()){
+			todoRepo.delete(todo);
+			return todo;
+		}else {
+			return null;
+		}
 	}
 
 

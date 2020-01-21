@@ -1,15 +1,10 @@
 package com.example;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -18,7 +13,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-
  
 @Configuration
 @EnableWebSecurity
@@ -28,7 +22,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 		// 認可の設定
 		http.authorizeRequests()
-        		.antMatchers("/prelogin","/register") 
+        		.antMatchers("/login","/register") 
         			.permitAll() // ログインAPI、会員登録APIは認証に関係なく許可する
         		.anyRequest()
         			.authenticated() // 他のAPIは認証されたユーザのみ許可する
@@ -36,8 +30,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 認証、認可の例外処理
         .and()		
         	.exceptionHandling()
-        		.authenticationEntryPoint(authenticationEntryPoint())
-            	.accessDeniedHandler(accessDeniedHandler())
 
         // 認証と成功・失敗時の処理	
         .and()
@@ -45,8 +37,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         		.loginProcessingUrl("/login").permitAll() // ログイン処理をするURL
 		        	.usernameParameter("name")
 		        	.passwordParameter("password")
-	        	.successHandler(authenticationSuccessHandler())
-	            .failureHandler(authenticationFailureHandler())
+        		.successHandler(authenticationSuccessHandler())
+		        .failureHandler(authenticationFailureHandler())
         	
 		//　ログアウト時の処理
         .and()
@@ -62,21 +54,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.and()
 			.csrf()
 //				.ignoringAntMatchers("/login")
-//				.csrfTokenRepository(new CookieCsrfTokenRepository())
-				.disable() // CSRF対策機能を無効化する
-		;
-
+//				.csrfTokenRepository(new csrfTokenRepository())
+        		.disable(); // CSRF対策機能を無効化する
         
     }
-
-	// 認証処理のコンフィグレーション
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth,
-								@Qualifier("simpleUserDetailsService") UserDetailsService userDetailsService
-								) throws Exception{
-		auth.eraseCredentials(true)
-			.userDetailsService(userDetailsService);
-	}
 
 	//パスワードをハッシュ化
 	@Bean
