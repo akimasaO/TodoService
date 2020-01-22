@@ -52,6 +52,20 @@ public class KaiinController {
 		return ResponseEntity.ok(todo);
 	}
 	
+	@RequestMapping(path = "/adddbdata", method = RequestMethod.POST)
+	public ResponseEntity<Todo> add(
+			@RequestParam("date") String date,
+			@RequestParam("content") String content,
+			@RequestParam("userid") int userid) {
+		Todo todo = new Todo();
+		todo.setDate(date);
+		todo.setContent(content);
+		todo.setUserId(userid);
+		kaiinService.adddb(todo);
+		
+		return ResponseEntity.ok(todo);
+	}
+	
 	@RequestMapping(path = "/query", method = RequestMethod.GET)
 	public ResponseEntity<List<Todo>> query() {
 		Kaiin loginkaiin = (Kaiin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

@@ -51,6 +51,11 @@ public class KaiinService implements UserDetailsService{
 		todo.setUserId(kaiin.getUserId());
 		todoRepo.save(todo);
 	}
+	
+	// addDB API
+	public void adddb(Todo todo) {
+		todoRepo.save(todo);
+	}
 
 	// query API
 	public List<Todo> query(Kaiin loginkaiin) {
