@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @RestController
@@ -27,59 +27,54 @@ public class KaiinController {
 	// login/logout API
 	// Security Configurationの設定で有効になるため実装は不要です。
 	
-	// register API〇
-	@RequestMapping(path = "/register", method = RequestMethod.POST)
+	// ユーザ登録API
+	@RequestMapping(path = "/user", method = RequestMethod.POST)
 	public ResponseEntity<Kaiin> register(
-			@RequestParam("name") String name,
-			@RequestParam("password") String password) {
-		Kaiin kaiin = new Kaiin();
-		kaiin.setName(name);
-		kaiinService.register(kaiin,password);
+			@RequestBody Kaiin kaiin) { // @RequestBodyを付与することでEntityインスタンスにJSONデータがマッピングされます。
+		kaiinService.register(kaiin);
 		return ResponseEntity.ok(kaiin);
 	}
 	
-	
-	@RequestMapping(path = "/add", method = RequestMethod.POST)
+	// Todo追加API
+	@RequestMapping(value = "/todo/{userid}", method = RequestMethod.POST)
 	public ResponseEntity<Todo> add(
-			@RequestParam("date") String date,
-			@RequestParam("content") String content) {
-		Kaiin loginkaiin = (Kaiin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		Todo todo = new Todo();
-		todo.setDate(date);
-		todo.setContent(content);
-		kaiinService.add(todo,loginkaiin);
+			@RequestBody Todo todo,
+			@PathVariable int userid) {
+		todo.setUserId(userid);
+		kaiinService.add(todo);
 		
 		return ResponseEntity.ok(todo);
 	}
 	
-	@RequestMapping(path = "/adddbdata", method = RequestMethod.POST)
-	public ResponseEntity<Todo> add(
-			@RequestParam("date") String date,
-			@RequestParam("content") String content,
-			@RequestParam("userid") int userid) {
-		Todo todo = new Todo();
-		todo.setDate(date);
-		todo.setContent(content);
+	// 実験用Todo追加API
+	@RequestMapping(value = "/todo/adddbdata/{userid}", method = RequestMethod.POST)
+	public ResponseEntity<Todo> adddate(
+			@RequestBody Todo todo,
+			@PathVariable int userid) {
 		todo.setUserId(userid);
 		kaiinService.adddb(todo);
 		
 		return ResponseEntity.ok(todo);
 	}
 	
-	@RequestMapping(path = "/query", method = RequestMethod.GET)
-	public ResponseEntity<List<Todo>> query() {
-		Kaiin loginkaiin = (Kaiin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		return ResponseEntity.ok(kaiinService.query(loginkaiin));
+	// Todo検索API 
+	@RequestMapping(value = "/todo/{userid}", method = RequestMethod.GET)
+	public ResponseEntity<List<Todo>> query(
+			@PathVariable int userid) {
+			List<Todo> todoList =  kaiinService.query(userid);
+		return ResponseEntity.ok(todoList);
 	}
 	
-	
-	@RequestMapping(path = "/delete", method = RequestMethod.POST)
-	public ResponseEntity<Todo> delete(@RequestParam int todoid) {
-		Kaiin loginkaiin = (Kaiin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		Todo todo = new Todo();
-		todo.setTodoId(todoid);
-				
-		return ResponseEntity.ok(kaiinService.delete(todo, loginkaiin));
+	// Todo削除API
+	@RequestMapping(value = "/todo/{userid}/{todoid}", method = RequestMethod.DELETE)
+	public ResponseEntity<ResponceMessage> delete(
+			@PathVariable int userid,
+			@PathVariable int todoid) {
+		kaiinService.delete(userid,todoid);
+		ResponceMessage resMessa = new ResponceMessage();
+		resMessa.setMessage("Todo削除完了");
+		
+		return ResponseEntity.ok(resMessa);
 		
 	}
 }

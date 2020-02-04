@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -22,7 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 		// 認可の設定
 		http.authorizeRequests()
-        		.antMatchers("/login","/register","/adddbdata") 
+        		.antMatchers("/login","/user","/adddbdata") 
         			.permitAll() // ログインAPI、会員登録API、DBデータ作成APIは認証に関係なく許可する
         		.anyRequest()
         			.authenticated() // 他のAPIは認証されたユーザのみ許可する
@@ -32,20 +33,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         	.exceptionHandling()
 
         // 認証と成功・失敗時の処理	
-        .and()
-        	.formLogin()
-        		.loginProcessingUrl("/login").permitAll() // ログイン処理をするURL
-		        	.usernameParameter("name")
-		        	.passwordParameter("password")
-        		.successHandler(authenticationSuccessHandler())
-		        .failureHandler(authenticationFailureHandler())
+//        .and()
+//        	.formLogin()
+//        		.loginProcessingUrl("/login").permitAll() // ログイン処理をするURL
+//		        	.usernameParameter("uaername")
+//		        	.passwordParameter("password")
+//        		.successHandler(authenticationSuccessHandler())
+//		        .failureHandler(authenticationFailureHandler())
         	
 		//　ログアウト時の処理
         .and()
         	.logout()
         		.logoutUrl("/logout")
-        		.invalidateHttpSession(true)
-        		.deleteCookies("JSESSIONID")
+//        		.invalidateHttpSession(true)
+//        		.deleteCookies("JSESSIONID")
         		.logoutSuccessHandler(logoutSuccessHandler())
         	
 
@@ -55,15 +56,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.csrf()
 //				.ignoringAntMatchers("/login")
 //				.csrfTokenRepository(new csrfTokenRepository())
-        		.disable(); // CSRF対策機能を無効化する
-        
+        		.disable() // CSRF対策機能を無効化する
+        		.addFilter(new JWTAuthenticationFilter(authenticationManager(), bCryptPasswordEncoder()))
+                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+		        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        ;
     }
 
 	//パスワードをハッシュ化
 	@Bean
-	public PasswordEncoder passwordEncoder() {
-	    return new BCryptPasswordEncoder();
-	}
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 	
 	AuthenticationEntryPoint authenticationEntryPoint() {
         return new SimpleAuthenticationEntryPoint();

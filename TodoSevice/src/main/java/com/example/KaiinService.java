@@ -39,16 +39,14 @@ public class KaiinService implements UserDetailsService{
 	}
 
 	// register API
-	public void register(Kaiin kaiin, String rawPassword) {
-		String encodedPassword = passwordEncoder.encode(rawPassword);
+	public void register(Kaiin kaiin) {
+		String encodedPassword = passwordEncoder.encode(kaiin.getPassword());
         kaiin.setPassword(encodedPassword);
 		kaiinRepo.save(kaiin);
 	}	
 	
 	// add API
-	public void add(Todo todo, Kaiin loginkaiin) {
-		Kaiin kaiin = kaiinRepo.findByName(loginkaiin.getUsername());
-		todo.setUserId(kaiin.getUserId());
+	public void add(Todo todo) {
 		todoRepo.save(todo);
 	}
 	
@@ -58,16 +56,14 @@ public class KaiinService implements UserDetailsService{
 	}
 
 	// query API
-	public List<Todo> query(Kaiin loginkaiin) {
-		Kaiin kaiin = kaiinRepo.findByName(loginkaiin.getUsername());
-		return todoRepo.findByUserid(kaiin.getUserId());
+	public List<Todo> query(int userid) {
+		return todoRepo.findByUserid(userid);
 		
 	}
 
-	public Todo delete(Todo todo, Kaiin loginkaiin) {
-		todo = todoRepo.findByTodoid(todo.getTodoId());
-		Kaiin kaiin = kaiinRepo.findByName(loginkaiin.getUsername());
-		if(todo.getUserId() == kaiin.getUserId()){
+	public Todo delete(int userid, int todoid) {
+		Todo todo = todoRepo.findByTodoid(todoid);
+		if(todo.getUserId() == userid){
 			todoRepo.delete(todo);
 			return todo;
 		}else {
