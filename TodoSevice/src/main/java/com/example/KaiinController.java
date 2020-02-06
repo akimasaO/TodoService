@@ -46,17 +46,17 @@ public class KaiinController {
 		return ResponseEntity.ok(todo);
 	}
 	
-	// 実験用Todo追加API
-	@RequestMapping(value = "/todo/adddbdata/{userid}", method = RequestMethod.POST)
-	public ResponseEntity<Todo> adddate(
-			@RequestBody Todo todo,
-			@PathVariable int userid) {
-		todo.setUserId(userid);
-		kaiinService.adddb(todo);
-		
-		return ResponseEntity.ok(todo);
-	}
-	
+//	// 実験用Todo追加API
+//	@RequestMapping(value = "/todo/adddbdata/{userid}", method = RequestMethod.POST)
+//	public ResponseEntity<Todo> adddate(
+//			@RequestBody Todo todo,
+//			@PathVariable int userid) {
+//		todo.setUserId(userid);
+//		kaiinService.adddb(todo);
+//		
+//		return ResponseEntity.ok(todo);
+//	}
+//	
 	// Todo検索API 
 	@RequestMapping(value = "/todo/{userid}", method = RequestMethod.GET)
 	public ResponseEntity<List<Todo>> query(
@@ -77,4 +77,13 @@ public class KaiinController {
 		return ResponseEntity.ok(resMessa);
 		
 	}
+	
+	// DB用ユーザパス追加API
+	@RequestMapping(path = "/user/adddbdata/{userid}", method = RequestMethod.PUT)
+	public ResponseEntity<Kaiin> addPass(
+			@PathVariable int userid) { 
+		Kaiin kaiin = kaiinService.addPass(userid);
+		return ResponseEntity.ok(kaiin);
+	}
+	
 }

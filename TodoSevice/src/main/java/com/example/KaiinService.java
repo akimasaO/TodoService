@@ -50,10 +50,10 @@ public class KaiinService implements UserDetailsService{
 		todoRepo.save(todo);
 	}
 	
-	// addDB API
-	public void adddb(Todo todo) {
-		todoRepo.save(todo);
-	}
+//	// addDB API
+//	public void adddb(Todo todo) {
+//		todoRepo.save(todo);
+//	}
 
 	// query API
 	public List<Todo> query(int userid) {
@@ -69,6 +69,14 @@ public class KaiinService implements UserDetailsService{
 		}else {
 			return null;
 		}
+	}
+
+	public Kaiin addPass(int userid) {
+		Kaiin kaiin = kaiinRepo.findByUserid(userid);
+		String encodedPassword = passwordEncoder.encode(kaiin.getPassword());
+        kaiin.setPassword(encodedPassword);
+        kaiinRepo.save(kaiin);
+		return kaiin;
 	}
 
 

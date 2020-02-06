@@ -23,7 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 		// 認可の設定
 		http.authorizeRequests()
-        		.antMatchers("/login","/user","/adddbdata") 
+        		.antMatchers("/login","/user","/user/adddbdata/**") 
         			.permitAll() // ログインAPI、会員登録API、DBデータ作成APIは認証に関係なく許可する
         		.anyRequest()
         			.authenticated() // 他のAPIは認証されたユーザのみ許可する

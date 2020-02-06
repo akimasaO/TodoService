@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface KaiinRepository extends JpaRepository<Kaiin,Long> {
 	
-	public List<Kaiin> findByUserid(int userid); 
+	public Kaiin findByUserid(int userid); 
 	public Kaiin findByName(String name); 
 }
