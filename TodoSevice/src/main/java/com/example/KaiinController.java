@@ -81,8 +81,10 @@ public class KaiinController {
 	// DB用ユーザパス追加API
 	@RequestMapping(path = "/user/adddbdata/{userid}", method = RequestMethod.PUT)
 	public ResponseEntity<Kaiin> addPass(
-			@PathVariable int userid) { 
-		Kaiin kaiin = kaiinService.addPass(userid);
+			@PathVariable int userid,
+			@RequestBody Kaiin kaiin) { 
+		kaiin.setUserId(userid);
+		kaiinService.addDbRegi(kaiin);
 		return ResponseEntity.ok(kaiin);
 	}
 	

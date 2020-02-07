@@ -52,6 +52,7 @@ public class Kaiin implements UserDetails { //　認証用にUserDetailsを実�
 		return this.password;
 	}
 
+
 	@Override
 	public String getUsername() {
 		// TODO Auto-generated method stub
@@ -85,8 +86,6 @@ public class Kaiin implements UserDetails { //　認証用にUserDetailsを実�
 	public void setUserId(int userid) {this.userid = userid;}
 	public int getUserId() {return userid;}
 	public void setName(String name) {this.name = name;}
-	//public String getName() {return name;}
 	public void setPassword(String password) {this.password = password;}
-	//public String getPassword() {return password;} //被ったからコメントアウト
 
 }
